@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class TowerController : MonoBehaviour
 {
-    public TowerState State;
-
-    public float SearchRadius = 50f;
-
-    public float ShootingRadius = 50f;
-
-    public float RotationSpeed = 2f;
-
-    public float FireCooldown = 1f;
-
-    public GameObject CurrentTarget;
-
 
     private Transform _transform;
 
@@ -26,6 +13,25 @@ public class TowerController : MonoBehaviour
     private float _currentFireCooldown;
 
     private List<Color> _defaultColors;
+
+    public TowerState State;
+
+    public int TowerCost = 100;
+
+    public int TowerLevel = 1;
+
+    public float SearchRadius = 50f;
+
+    public float ShootingRadius = 50f;
+
+    public float RotationSpeed = 2f;
+
+    public float FireCooldown = 1f;
+
+    public float DamagePower = 10f;
+
+    public GameObject CurrentTarget;
+
 
     void Awake()
     {
@@ -43,7 +49,6 @@ public class TowerController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-       
         State = TowerState.Placing;
     }
 
@@ -98,7 +103,7 @@ public class TowerController : MonoBehaviour
 
     private void Fire()
     {
-        _gun.GetComponent<GunController>().Fire(CurrentTarget.transform);
+        _gun.GetComponent<GunController>().Fire(CurrentTarget.transform, DamagePower);
     }
 
     private void FindEnemies()

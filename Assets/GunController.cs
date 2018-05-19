@@ -23,15 +23,17 @@ public class GunController : MonoBehaviour
 		
 	}
 
-    public void Fire(Transform target)
+    public void Fire(Transform target, float power)
     {
         foreach (Transform child in _parent.transform)
         {
             if (child.gameObject.activeSelf) continue;
-            var bullet = child.gameObject;
-            bullet.transform.position = Pivot.transform.position;
-            bullet.GetComponent<BulletController>().TargetTransform = target;
-            bullet.SetActive(true);
+            var obj = child.gameObject;
+            obj.transform.position = Pivot.transform.position;
+            var bullet = obj.GetComponent<BulletController>();
+            bullet.TargetTransform = target;
+            bullet.DamagePower = power;
+            obj.SetActive(true);
             //StartCoroutine(Deactivate(bullet));
             break;
         }

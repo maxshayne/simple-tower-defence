@@ -6,27 +6,61 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
 
-    public List<GameObject> Waypoints;
-
-    public GameObject CurrentPoint;
-
-    public float Speed = 1;
+    private float _health;
 
     private Transform _transform;
 
+    private List<GameObject> _waypoints;
+
     private List<GameObject> _points;
+
+    public Game GameController;
+
+    public GameObject CurrentPoint;
+
+    public float Health
+    {
+        get { return _health; }
+        set
+        {
+            if (_health == value) return;
+            _health = value;
+            if (HealthChangeEvent != null)
+                HealthChangeEvent(_health);
+        }
+    }
+
+    public float MaxHealth = 100;
+
+    public float Speed = 1;
+
+    public delegate void OnHealthChangeDelegate(float val);
+
+    public event OnHealthChangeDelegate HealthChangeEvent;
+
 
     void Awake()
     {
         _transform = transform;
-        Waypoints = GameObject.FindGameObjectsWithTag("Waypoint").ToList();
-        _points = Waypoints;
+        _waypoints = GameObject.FindGameObjectsWithTag("Waypoint").ToList();  //знаю, что юзать GameObject.Find'ы всякие сродни стрельбе в колено, но т.к. времени мало, пришлось, не судите строго
+        _points = _waypoints;
+        Health = MaxHealth;
+        HealthChangeEvent += OnHealthChangeEvent;
+    }
+
+    private void OnHealthChangeEvent(float val)
+    {
+        Debug.Log("Health changed by" + val);
+        if (val <= 0)
+        {
+           Restore();
+        }
     }
 
     void OnEnable()
     {
         CurrentPoint = FindNearest(_points);
-        Waypoints.Remove(CurrentPoint);
+        _waypoints.Remove(CurrentPoint);
     }
 
     // Update is called once per frame
@@ -78,16 +112,23 @@ public class EnemyController : MonoBehaviour
         switch (collider.tag)
         {
             case "Waypoint":
-                var list = Waypoints.Where(c => c.transform.position.magnitude !=
+                var list = _waypoints.Where(c => c.transform.position.magnitude !=
                                                 CurrentPoint.transform.position.magnitude)
                     .ToList();
                 CurrentPoint = FindNearest(list);
-                Waypoints.Remove(CurrentPoint);
+                _waypoints.Remove(CurrentPoint);
                 break;
             case "Endpoint":
-                CurrentPoint = null;
-                gameObject.SetActive(false);
+                Game.Instance.LifeCount--;
+                Restore();
                 break;
         }
+    }
+
+    private void Restore()
+    {
+        Health = MaxHealth;
+        CurrentPoint = null;
+        gameObject.SetActive(false);
     }
 }

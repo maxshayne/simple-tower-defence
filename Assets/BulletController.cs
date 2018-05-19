@@ -5,6 +5,8 @@ public class BulletController : MonoBehaviour
 
     public float Speed = 10f;
 
+    public float DamagePower;
+
     public Transform TargetTransform;
 
     // Use this for initialization
@@ -26,6 +28,10 @@ public class BulletController : MonoBehaviour
     void OnTriggerEnter(Collider collider)
     {
         Debug.Log("Bullet triggered with " + collider.name);
+        if (collider.tag == "Enemy")
+        {
+            collider.transform.parent.GetComponent<EnemyController>().Health -= DamagePower;
+        }
         gameObject.SetActive(false);
     }
 }

@@ -4,10 +4,6 @@ using UnityEngine.SceneManagement;
 public class Game : MonoBehaviour
 {
 
-    public GameObject TowerPrefab;
-
-    public LayerMask hitLayers;
-
     private bool _isTowerSelected;
 
     private GameObject _gameObject;
@@ -16,21 +12,28 @@ public class Game : MonoBehaviour
 
     private GameObject _hitByTowerGameObject;
 
+    public int LifeCount = 4;
+
+    public int Money = 500;
+
+    public float WaveTimer;
+
+    public GameObject TowerPrefab;
+
+    public LayerMask hitLayers;
+
+    public static Game Instance { get; set; }
+
+    void Awake()
+    {
+        if (Instance == null || Instance != this)
+            Instance = this;
+    }
+
 	// Use this for initialization
 	void Start ()
 	{
 
-	    //var startPos = Place.transform.position;
-
-	    //for (int i = 0; i < 10; i++)
-	    //{
-	    //    for (int j = 0; j < 10; j++)
-	    //    {
-	    //        var pos = new Vector3(startPos.x + 10 * i, startPos.y, startPos.z + 10 * j);
-	    //        Instantiate(Place, pos, Quaternion.identity);
-	    //    }
-	    //}
-		
 	}
 	
 	// Update is called once per frame
@@ -49,9 +52,11 @@ public class Game : MonoBehaviour
     private void PlaceTower()
     {
         if (!_canBePlaced) return;
+        var tower = _gameObject.GetComponent<TowerController>();
+        if (Money - tower.TowerCost < 0) return;        
         _gameObject.transform.position = _hitByTowerGameObject.transform.position;
         _hitByTowerGameObject.tag = "Tower";
-        var tower = _gameObject.GetComponent<TowerController>();
+        Money -= tower.TowerCost;
         tower.RestoreColors();
         tower.State = TowerState.Patroling;
         _isTowerSelected = false;
@@ -72,25 +77,23 @@ public class Game : MonoBehaviour
 
     public void FollowCursor()
     {
-        Vector3 mouse = Input.mousePosition;
-        Ray castPoint = Camera.main.ScreenPointToRay(mouse);
+        var mouse = Input.mousePosition;
+        var castPoint = Camera.main.ScreenPointToRay(mouse);
         RaycastHit hit;
-        if (Physics.Raycast(castPoint, out hit, Mathf.Infinity, hitLayers))
+        if (!Physics.Raycast(castPoint, out hit, Mathf.Infinity, hitLayers)) return;
+        Debug.Log("Hit by raycast - " + hit.transform.name);
+        var tower = _gameObject.GetComponent<TowerController>();
+        _gameObject.transform.position = hit.point;
+        _hitByTowerGameObject = hit.transform.gameObject;
+        if (hit.transform.tag == "TowerPlace")
         {
-            Debug.Log("Hit by raycast - " + hit.transform.name);
-            var tower = _gameObject.GetComponent<TowerController>();
-            _gameObject.transform.position = hit.point;
-            _hitByTowerGameObject = hit.transform.gameObject;
-            if (hit.transform.tag == "TowerPlace")
-            {
-                tower.Colorize(Color.green);
-                _canBePlaced = true;
-            }
-            else
-            {
-                tower.Colorize(Color.red);
-                _canBePlaced = false;
-            }
+            tower.Colorize(Color.green);
+            _canBePlaced = true;
+        }
+        else
+        {
+            tower.Colorize(Color.red);
+            _canBePlaced = false;
         }
     }
 }
