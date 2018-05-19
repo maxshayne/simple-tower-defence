@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class TowerController : MonoBehaviour
+public class Tower : MonoBehaviour
 {
 
     private Transform _transform;
@@ -31,6 +32,8 @@ public class TowerController : MonoBehaviour
     public float DamagePower = 10f;
 
     public GameObject CurrentTarget;
+
+    public GameObject RadiusObject;
 
 
     void Awake()
@@ -84,7 +87,22 @@ public class TowerController : MonoBehaviour
                 CheckDistance();
                 break;
         }
+    }
 
+    public void ClickOnTower(BaseEventData data)
+    {
+        PointerEventData pData = (PointerEventData)data;
+        if (!RadiusObject.activeSelf)
+        {
+            RadiusObject.SetActive(true);
+            var scale = RadiusObject.transform.localScale;
+            RadiusObject.transform.localScale = new Vector3(scale.x * ShootingRadius, scale.y * ShootingRadius,
+                scale.z * ShootingRadius);
+        }
+        else
+        {
+            RadiusObject.SetActive(false);
+        }
     }
 
     public void Colorize(Color color)
@@ -103,7 +121,7 @@ public class TowerController : MonoBehaviour
 
     private void Fire()
     {
-        _gun.GetComponent<GunController>().Fire(CurrentTarget.transform, DamagePower);
+        _gun.GetComponent<Gun>().Fire(CurrentTarget.transform, DamagePower);
     }
 
     private void FindEnemies()

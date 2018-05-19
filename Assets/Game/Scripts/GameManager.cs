@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Game : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
 
     private bool _isTowerSelected;
@@ -10,23 +10,29 @@ public class Game : MonoBehaviour
 
     private bool _canBePlaced = false;
 
-    private GameObject _hitByTowerGameObject;
+    private GameObject _hitByTowerGameObject;    
 
     public int LifeCount = 4;
 
     public int Money = 500;
 
-    public float WaveTimer = 40;
+    public float WaveTimer;
+
+    public float WaveTimerStartTime = 40;
+
+    public float WaveTimerStep = 20f;    
 
     public GameObject TowerPrefab;
 
     public LayerMask hitLayers;
 
+    public GameState State;
+
     public delegate void NextWaveDelegate();
 
     public event NextWaveDelegate NextWaveEvent;
 
-    public static Game Instance { get; set; }
+    public static GameManager Instance { get; set; }
 
     void Awake()
     {
@@ -37,7 +43,8 @@ public class Game : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-
+        State = GameState.Start;
+        WaveTimer = WaveTimerStartTime;
 	}
 	
 	// Update is called once per frame
@@ -52,7 +59,8 @@ public class Game : MonoBehaviour
             }
         }
 
-        WaveTimer -= Time.deltaTime;
+        if (State == GameState.Wave)
+            WaveTimer -= Time.deltaTime;
 
         if (WaveTimer <= 0)
         {
@@ -60,16 +68,18 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void SpawnNextWave()
+    public void SpawnNextWave()
     {
-        WaveTimer = 60;
-        NextWaveEvent.Invoke();
+        WaveTimer = WaveTimerStartTime + WaveTimerStep;
+        WaveTimerStartTime = WaveTimer;
+        if (NextWaveEvent != null) NextWaveEvent.Invoke();
+        State = GameState.Wave;
     }
 
     private void PlaceTower()
     {
         if (!_canBePlaced) return;
-        var tower = _gameObject.GetComponent<TowerController>();
+        var tower = _gameObject.GetComponent<Tower>();
         if (Money - tower.TowerCost < 0) return;        
         _gameObject.transform.position = _hitByTowerGameObject.transform.position;
         _hitByTowerGameObject.tag = "Tower";
@@ -99,7 +109,7 @@ public class Game : MonoBehaviour
         RaycastHit hit;
         if (!Physics.Raycast(castPoint, out hit, Mathf.Infinity, hitLayers)) return;
         Debug.Log("Hit by raycast - " + hit.transform.name);
-        var tower = _gameObject.GetComponent<TowerController>();
+        var tower = _gameObject.GetComponent<Tower>();
         _gameObject.transform.position = hit.point;
         _hitByTowerGameObject = hit.transform.gameObject;
         if (hit.transform.tag == "TowerPlace")
@@ -113,4 +123,10 @@ public class Game : MonoBehaviour
             _canBePlaced = false;
         }
     }
+}
+
+public enum GameState
+{
+    Start,
+    Wave    
 }

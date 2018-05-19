@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class EnemyController : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
 
     private float _health;
@@ -13,6 +14,8 @@ public class EnemyController : MonoBehaviour
     private List<GameObject> _waypoints;
 
     private List<GameObject> _points;
+
+    public Image HealthBar;
 
     public GameObject CurrentPoint;
 
@@ -30,7 +33,7 @@ public class EnemyController : MonoBehaviour
 
     public int Reward = 30;
 
-    public float MaxHealth = 100;
+    public float StartHealth = 100;
 
     public float Speed = 1;
 
@@ -44,13 +47,15 @@ public class EnemyController : MonoBehaviour
         _transform = transform;
         _waypoints = GameObject.FindGameObjectsWithTag("Waypoint").ToList();  //знаю, что юзать GameObject.Find'ы всякие сродни стрельбе в колено, но т.к. времени мало, пришлось, не судите строго
         _points = _waypoints;
-        Health = MaxHealth;
+        Health = StartHealth;
         HealthChangeEvent += OnHealthChangeEvent;
     }
 
     private void OnHealthChangeEvent(float val)
     {
-        Debug.Log("Health changed by" + val);
+        Debug.Log("Health changed by " + val);
+        HealthBar.fillAmount = val / StartHealth;
+        Debug.Log("HealthBar.fillAmount: " + HealthBar.fillAmount);
         if (val <= 0)
         {
            Restore();
@@ -119,7 +124,7 @@ public class EnemyController : MonoBehaviour
                 _waypoints.Remove(CurrentPoint);
                 break;
             case "Endpoint":
-                Game.Instance.LifeCount--;
+                GameManager.Instance.LifeCount--;
                 Restore();
                 break;
         }
@@ -127,7 +132,7 @@ public class EnemyController : MonoBehaviour
 
     private void Restore()
     {
-        Health = MaxHealth;
+        Health = StartHealth;
         CurrentPoint = null;
         gameObject.SetActive(false);
     }

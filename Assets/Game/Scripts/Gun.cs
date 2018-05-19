@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class GunController : MonoBehaviour
+public class Gun : MonoBehaviour
 {
     public float BulletSpeed = 6f;
 
@@ -30,7 +29,7 @@ public class GunController : MonoBehaviour
             if (child.gameObject.activeSelf) continue;
             var obj = child.gameObject;
             obj.transform.position = Pivot.transform.position;
-            var bullet = obj.GetComponent<BulletController>();
+            var bullet = obj.GetComponent<Bullet>();
             bullet.TargetTransform = target;
             bullet.DamagePower = power;
             obj.SetActive(true);

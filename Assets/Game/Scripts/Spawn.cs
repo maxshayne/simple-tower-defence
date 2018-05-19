@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
-public class SpawnController : MonoBehaviour
+public class Spawn : MonoBehaviour
 {
 
     public GameObject Parent;
@@ -18,16 +17,15 @@ public class SpawnController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-       Game.Instance.NextWaveEvent += OnNextWaveEvent;
-        Spawn();
+       GameManager.Instance.NextWaveEvent += OnNextWaveEvent;        
     }
 
     private void OnNextWaveEvent()
     {
-        Spawn();
+        SpawnMobs();
     }
 
-    void Spawn()
+    void SpawnMobs()
     {
         switch (WaveNumber)
         {
@@ -35,21 +33,22 @@ public class SpawnController : MonoBehaviour
                 WaveNumber++;
                 for (int i = 0; i < 10; i++)
                 {
-                    Invoke("ActivateEnemy", SpawnDelay * i);
+                    StartCoroutine(ActivateEnemy(SpawnDelay * i));
                 }
                 break;
             default:
                 WaveNumber++;
                 for (int i = 0; i < 10; i++)
                 {
-                    Invoke("ActivateEnemy", SpawnDelay * i);
+                    StartCoroutine(ActivateEnemy(SpawnDelay * i));
                 }
                 break;
         }
     }
 
-    private void ActivateEnemy()
+    private IEnumerator ActivateEnemy(float delay)
     {
+        yield return new WaitForSeconds(delay);
         foreach (Transform child in Parent.transform)
         {
             if (child.gameObject.activeSelf) continue;
