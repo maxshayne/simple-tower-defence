@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class SpawnController : MonoBehaviour
@@ -12,23 +13,18 @@ public class SpawnController : MonoBehaviour
 
     public int WaveNumber = 0;
 
-    private float time = 0f;
+    private float time = 0f;    
 
     // Use this for initialization
     void Start()
     {
+       Game.Instance.NextWaveEvent += OnNextWaveEvent;
         Spawn();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnNextWaveEvent()
     {
-        time += Time.deltaTime;
-        if (time > NextWaveDelay)
-        {
-            time = 0f;
-            Spawn();
-        }
+        Spawn();
     }
 
     void Spawn()
@@ -39,7 +35,7 @@ public class SpawnController : MonoBehaviour
                 WaveNumber++;
                 for (int i = 0; i < 10; i++)
                 {
-                    Invoke("ActivateEnemy", SpawnDelay*i);
+                    Invoke("ActivateEnemy", SpawnDelay * i);
                 }
                 break;
             default:

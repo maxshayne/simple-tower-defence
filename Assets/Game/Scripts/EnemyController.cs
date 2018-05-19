@@ -14,8 +14,6 @@ public class EnemyController : MonoBehaviour
 
     private List<GameObject> _points;
 
-    public Game GameController;
-
     public GameObject CurrentPoint;
 
     public float Health
@@ -29,6 +27,8 @@ public class EnemyController : MonoBehaviour
                 HealthChangeEvent(_health);
         }
     }
+
+    public int Reward = 30;
 
     public float MaxHealth = 100;
 

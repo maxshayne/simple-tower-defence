@@ -16,11 +16,15 @@ public class Game : MonoBehaviour
 
     public int Money = 500;
 
-    public float WaveTimer;
+    public float WaveTimer = 40;
 
     public GameObject TowerPrefab;
 
     public LayerMask hitLayers;
+
+    public delegate void NextWaveDelegate();
+
+    public event NextWaveDelegate NextWaveEvent;
 
     public static Game Instance { get; set; }
 
@@ -47,6 +51,19 @@ public class Game : MonoBehaviour
                 PlaceTower();
             }
         }
+
+        WaveTimer -= Time.deltaTime;
+
+        if (WaveTimer <= 0)
+        {
+            SpawnNextWave();
+        }
+    }
+
+    private void SpawnNextWave()
+    {
+        WaveTimer = 60;
+        NextWaveEvent.Invoke();
     }
 
     private void PlaceTower()
