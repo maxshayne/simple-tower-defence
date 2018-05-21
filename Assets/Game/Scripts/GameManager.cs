@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
 
     public int EnemyCount = 0;
 
-    public int WaveNumber = 1;
+    public int WaveNumber = 0;
 
     public float WaveTimer;
 

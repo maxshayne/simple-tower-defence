@@ -10,7 +10,9 @@ public class Enemy : MonoBehaviour
 
     private Transform _transform;
 
-    private int _waveIndex;
+    private int _wayIndex;
+
+    private bool isAlive = true;
 
     public Image HealthBar;
 
@@ -53,8 +55,8 @@ public class Enemy : MonoBehaviour
         Debug.Log("Health changed by " + val);
         HealthBar.fillAmount = val / StartHealth;
       //  Debug.Log("HealthBar.fillAmount: " + HealthBar.fillAmount);
-        if (val <= 0)
-        {
+        if (val <= 0 && isAlive)
+        {            
             Die();
         }
     }
@@ -62,7 +64,7 @@ public class Enemy : MonoBehaviour
     void OnEnable()
     {
         CurrentPoint = Path.First();
-        _waveIndex = 0;
+        _wayIndex = 0;
     }
 
     // Update is called once per frame
@@ -95,12 +97,13 @@ public class Enemy : MonoBehaviour
 
     private void SelectNewWayPoint()
     {        
-        CurrentPoint = Path[_waveIndex];
-        _waveIndex++;
+        CurrentPoint = Path[_wayIndex];
+        _wayIndex++;
     }
 
     private void Die()
     {
+        isAlive = false;
         GameManager.Instance.Money += Reward;
         GameManager.Instance.EnemyCount--;
         Destroy(gameObject);

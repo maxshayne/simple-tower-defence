@@ -47,7 +47,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1932575152959992
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +231,7 @@ MonoBehaviour:
   HealthBar: {fileID: 114990934152805148}
   Path: []
   CurrentPoint: {fileID: 0}
-  Reward: 100
+  Reward: 15
   StartHealth: 500
   Speed: 2
 --- !u!114 &114990934152805148

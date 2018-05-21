@@ -36,66 +36,64 @@ public class Spawn : MonoBehaviour
     {
         switch (GameManager.Instance.WaveNumber)
         {
-            case 0:
-
-                for (int i = 0; i < 10; i++)
-                {
-                    StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
-                }
-                break;
             case 1:
-
-                for (int i = 0; i < 10; i++)
-                {
-                    StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
-                }
                 for (int i = 0; i < 5; i++)
                 {
-                    StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
+                    StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
                 }
                 break;
             case 2:
 
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
                 }
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
                 }
                 break;
             case 3:
 
-                for (int i = 0; i < 15; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
                 }
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
                 }
                 break;
             case 4:
 
-                for (int i = 0; i < 30; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
                 }
                 break;
             case 5:
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     StartCoroutine(ActivateEnemy(2, SpawnDelay * i));
                 }
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     StartCoroutine(ActivateEnemy(2, SpawnDelay * i));
                 }
                 break;
             case 6:
-                for (int i = 0; i < 30; i++)
+                for (int i = 0; i < 15; i++)
+                {
+                    StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
+                }
+                break;
+            case 7:
+                for (int i = 0; i < 20; i++)
                 {
                     StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
                 }
@@ -103,47 +101,37 @@ public class Spawn : MonoBehaviour
                 {
                     StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
                 }
-                break;
-            case 7:
-                for (int i = 0; i < 40; i++)
-                {
-                    StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
-                }
-                for (int i = 0; i < 10; i++)
-                {
-                    StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
-                }
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
                 }
                 break;
             case 8:
-                for (int i = 0; i < 30; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     StartCoroutine(ActivateEnemy(0, SpawnDelay * i));
                 }
-                for (int i = 0; i < 30; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
                 }
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
                 }
                 break;
             case 9:
-                for (int i = 0; i < 40; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     StartCoroutine(ActivateEnemy(1, SpawnDelay * i));
                 }
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     StartCoroutine(ActivateEnemy(2, SpawnDelay * i));
                 }
                 break;
             case 10:
-                for (int i = 0; i < 30; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     StartCoroutine(ActivateEnemy(2, SpawnDelay * i));
                 }

@@ -83,7 +83,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 55888ac067e452c45a88a7c3853d5d7b, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -246,6 +246,7 @@ MonoBehaviour:
   LifeCount: 3
   Money: 200
   EnemyCount: 0
+  WaveNumber: 0
   WaveTimer: 0
   WaveTimerStartTime: 40
   WaveTimerStep: 20
@@ -274,4 +275,8 @@ MonoBehaviour:
   MoneyText: {fileID: 0}
   EnemyText: {fileID: 0}
   GameOverPanel: {fileID: 0}
+  VictoryPanel: {fileID: 0}
   GamePanel: {fileID: 0}
+  Clips:
+  - {fileID: 8300000, guid: 3fec875aacd2ae744bfa2ef69fc89fc0, type: 3}
+  - {fileID: 8300000, guid: 55888ac067e452c45a88a7c3853d5d7b, type: 3}

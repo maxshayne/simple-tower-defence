@@ -435,11 +435,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c57ab38fbcd1a4a498463b321890c779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  Enemies:
+  - {fileID: 1969533226885058, guid: bab58e4e147e8a540b4e035b1d531807, type: 2}
+  - {fileID: 1355726834964176, guid: 727d4def8517b044089876e23b6ed14b, type: 2}
+  - {fileID: 1864312283832036, guid: dfc9c9cb5477e304898929be730568ea, type: 2}
   SpawnTransform: {fileID: 4409052128513634}
   SpawnDelay: 2
   NextWaveDelay: 40
-  WaveNumber: 0
   PathObject: {fileID: 0}
 --- !u!135 &135033654916115346
 SphereCollider:
