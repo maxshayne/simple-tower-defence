@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,6 +9,8 @@ public class Tower : MonoBehaviour
     private Transform _transform;
 
     private GameObject _head;
+
+    private GameObject _body;
 
     private GameObject _gun;
 
@@ -41,9 +44,10 @@ public class Tower : MonoBehaviour
         _transform = transform;
         _head = gameObject.transform.GetChild(0).gameObject;
         _gun = _head.transform.GetChild(0).gameObject;
+        _body = gameObject.transform.GetChild(1).gameObject;
         _defaultColors = new List<Color>
         {
-            gameObject.GetComponent<MeshRenderer>().material.color,
+            _body.GetComponent<MeshRenderer>().material.color,
             _head.GetComponent<MeshRenderer>().material.color,
             _gun.GetComponent<MeshRenderer>().material.color
         };
@@ -65,7 +69,7 @@ public class Tower : MonoBehaviour
                 FindEnemies();
                 break;
             case TowerState.Firing:
-                if (CurrentTarget == null)
+                if (CurrentTarget == null || !CurrentTarget.activeSelf)
                 {
                     State = TowerState.Patroling;
                     break;
@@ -107,33 +111,47 @@ public class Tower : MonoBehaviour
 
     public void Colorize(Color color)
     {
-        gameObject.GetComponent<MeshRenderer>().material.color = color;
+        _body.GetComponent<MeshRenderer>().material.color = color;
         _head.GetComponent<MeshRenderer>().material.color = color;
-        _gun.GetComponent<MeshRenderer>().material.color = color;
+        //_gun.GetComponent<MeshRenderer>().material.color = color;
+        foreach (Transform child in _head.transform)
+        {
+            child.GetComponent<MeshRenderer>().material.color = color;
+        }
     }
 
     public void RestoreColors()
     {
-        gameObject.GetComponent<MeshRenderer>().material.color = _defaultColors[0];
+        _body.GetComponent<MeshRenderer>().material.color = _defaultColors[0];
         _head.GetComponent<MeshRenderer>().material.color = _defaultColors[1];
-        _gun.GetComponent<MeshRenderer>().material.color = _defaultColors[2];
+        //_gun.GetComponent<MeshRenderer>().material.color = _defaultColors[2];
+        foreach (Transform child in _head.transform)
+        {
+            child.GetComponent<MeshRenderer>().material.color = _defaultColors[2];
+        }
     }
 
     private void Fire()
     {
-        _gun.GetComponent<Gun>().Fire(CurrentTarget.transform, DamagePower);
+        foreach (Transform child in _head.transform)
+        {
+            child.GetComponent<Gun>().Fire(CurrentTarget.transform, DamagePower);
+        }
     }
 
     private void FindEnemies()
     {
-        var hitColliders = Physics.OverlapSphere(_transform.position, SearchRadius);
+        var hitColliders = Physics.OverlapSphere(_transform.position, SearchRadius).Where(obj=>obj.tag == "Enemy");
+        var maxDist = float.MaxValue;
         foreach (var hitCollider in hitColliders)
         {
-            if (hitCollider.tag != "Enemy") continue;
+            var dist = Vector3.Distance(_transform.position, hitCollider.transform.position);
+            if (!(dist < maxDist)) continue;
+            maxDist = dist;
             CurrentTarget = hitCollider.gameObject;
-            State = TowerState.Firing;
-            break;
         }
+        if (CurrentTarget != null)
+            State = TowerState.Firing;        
     }
 
     private void CheckDistance()

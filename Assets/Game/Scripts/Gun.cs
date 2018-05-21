@@ -1,11 +1,15 @@
-﻿using System.Collections;
+﻿using System;
 using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
+    public GunType Type;
+
     public float BulletSpeed = 6f;
 
     public GameObject Pivot;
+
+    public GameObject BulletPrefab;
 
     private GameObject _parent;
 
@@ -24,45 +28,47 @@ public class Gun : MonoBehaviour
 
     public void Fire(Transform target, float power)
     {
-        foreach (Transform child in _parent.transform)
+        switch (Type)
         {
-            if (child.gameObject.activeSelf) continue;
-            var obj = child.gameObject;
-            obj.transform.position = Pivot.transform.position;
-            var bullet = obj.GetComponent<Bullet>();
-            bullet.TargetTransform = target;
-            bullet.DamagePower = power;
-            obj.SetActive(true);
-            //StartCoroutine(Deactivate(bullet));
-            break;
+            case GunType.Gun:
+            case GunType.LaserGun:
+                var selected = false;
+                foreach (Transform child in _parent.transform)
+                {
+                    if (child.gameObject.activeSelf) continue;
+                    ShootBullet(target, power, child);
+                    selected = true;
+                    break;
+                }
+
+                if (!selected)
+                {
+                    var obj = Instantiate(BulletPrefab, transform);
+                    ShootBullet(target, power, obj.transform);
+                }
+                break;
+            case GunType.Cannon:
+                var obj1 = Instantiate(BulletPrefab, null);
+                ShootBullet(target, power, obj1.transform);
+                break;
         }
     }
 
-    private IEnumerator Deactivate(GameObject obj)
+    private void ShootBullet(Transform target, float power, Transform child)
     {
-
-        yield return new WaitForSeconds(2f);
-
-        obj.SetActive(false);
-        //Do Function here...
+        var obj = child.gameObject;
+        obj.transform.position = Pivot.transform.position;
+        var bullet = obj.GetComponent<Bullet>();
+        bullet.TargetTransform = target;
+        bullet.DamagePower = power;
+        bullet.AoE = Type == GunType.Cannon;
+        obj.SetActive(true);
     }
 }
 
-/*  public void Fire(Transform target)
-    {
-        var bullet = (from Transform child in Parent.transform select child.gameObject).FirstOrDefault();
-        if (bullet == null) return;
-        bullet.transform.parent = null;
-        bullet.transform.position = Pivot.transform.position;
-        bullet.SetActive(true);
-        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * BulletSpeed;
-        StartCoroutine(ReturnToList(bullet));
-    }
-
-    private IEnumerator ReturnToList(GameObject obj)
-    {
-
-        yield return new WaitForSeconds(2f);
-        obj.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        obj.transform.parent = Parent.transform;
-    }*/
+public enum GunType
+{
+    Gun,
+    LaserGun,
+    Cannon
+}

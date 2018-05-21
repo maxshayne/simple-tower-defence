@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -10,27 +11,39 @@ public class GameManager : MonoBehaviour
 
     private bool _canBePlaced = false;
 
-    private GameObject _hitByTowerGameObject;    
+    private GameObject _hitByTowerGameObject;
+
+    private AudioSource _backgroundAudioSource;
 
     public int LifeCount = 4;
 
     public int Money = 500;
 
+    public int EnemyCount = 0;
+
+    public int WaveNumber = 1;
+
     public float WaveTimer;
 
     public float WaveTimerStartTime = 40;
 
-    public float WaveTimerStep = 20f;    
+    public float WaveTimerStep = 20f;
 
-    public GameObject TowerPrefab;
-
+    public List<GameObject> TowerPrefabs;
+    
     public LayerMask hitLayers;
 
     public GameState State;
 
     public delegate void NextWaveDelegate();
 
+    public delegate void GameOverDelegate();
+
     public event NextWaveDelegate NextWaveEvent;
+
+    public event GameOverDelegate GameOverEvent;
+
+    public event GameOverDelegate VictoryEvent;
 
     public static GameManager Instance { get; set; }
 
@@ -43,6 +56,7 @@ public class GameManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+        _backgroundAudioSource = transform.GetChild(0).GetComponent<AudioSource>();
         State = GameState.Start;
         WaveTimer = WaveTimerStartTime;
 	}
@@ -57,6 +71,12 @@ public class GameManager : MonoBehaviour
             {
                 PlaceTower();
             }
+            else if (_gameObject != null && Input.GetMouseButtonUp(1))
+            {
+                Destroy(_gameObject);
+                _gameObject = null;
+                _isTowerSelected = false;
+            }
         }
 
         if (State == GameState.Wave)
@@ -66,12 +86,40 @@ public class GameManager : MonoBehaviour
         {
             SpawnNextWave();
         }
+
+        if (LifeCount <= 0)
+        {
+            GameOver();
+        }
+
+        if (WaveNumber >= 10 && EnemyCount == 0)
+        {
+            Victory();
+        }
+    }
+
+    private void Victory()
+    {
+        Time.timeScale = 0;
+        if (VictoryEvent != null) VictoryEvent.Invoke();
+        enabled = false;
+    }
+
+    private void GameOver()
+    {
+        Time.timeScale = 0;
+        if (GameOverEvent != null) GameOverEvent.Invoke();
+        enabled = false;
     }
 
     public void SpawnNextWave()
     {
+        if (WaveNumber >= 10) return;
+        if (!_backgroundAudioSource.isPlaying)
+            _backgroundAudioSource.Play();
         WaveTimer = WaveTimerStartTime + WaveTimerStep;
         WaveTimerStartTime = WaveTimer;
+        WaveNumber++;        
         if (NextWaveEvent != null) NextWaveEvent.Invoke();
         State = GameState.Wave;
     }
@@ -93,13 +141,16 @@ public class GameManager : MonoBehaviour
 
     public void ReloadLevel()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void SelectTower()
+    public void SelectTower(int towerIndex)
     {
+        var tower = TowerPrefabs[towerIndex].GetComponent<Tower>();
+        if (Money - tower.TowerCost < 0) return;
         _isTowerSelected = true;
-        _gameObject = Instantiate(TowerPrefab);
+        _gameObject = Instantiate(TowerPrefabs[towerIndex]);
     }
 
     public void FollowCursor()

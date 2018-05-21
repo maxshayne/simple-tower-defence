@@ -6001,4 +6001,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcfa3d9b404df1542ae3f84ae1c50e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Place: {fileID: 1845551825281158}
+  LifeCount: 4
+  Money: 500
+  EnemyCount: 0
+  WaveTimer: 0
+  WaveTimerStartTime: 40
+  WaveTimerStep: 20
+  TowerPrefab: {fileID: 0}
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  State: 0

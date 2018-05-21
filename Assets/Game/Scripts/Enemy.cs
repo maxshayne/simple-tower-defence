@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,13 +10,13 @@ public class Enemy : MonoBehaviour
 
     private Transform _transform;
 
-    private List<GameObject> _waypoints;
-
-    private List<GameObject> _points;
+    private int _waveIndex;
 
     public Image HealthBar;
 
-    public GameObject CurrentPoint;
+    public List<Transform> Path;
+
+    public Transform CurrentPoint;
 
     public float Health
     {
@@ -44,9 +43,7 @@ public class Enemy : MonoBehaviour
 
     void Awake()
     {
-        _transform = transform;
-        _waypoints = GameObject.FindGameObjectsWithTag("Waypoint").ToList();  //знаю, что юзать GameObject.Find'ы всякие сродни стрельбе в колено, но т.к. времени мало, пришлось, не судите строго
-        _points = _waypoints;
+        _transform = transform;                
         Health = StartHealth;
         HealthChangeEvent += OnHealthChangeEvent;
     }
@@ -55,60 +52,30 @@ public class Enemy : MonoBehaviour
     {
         Debug.Log("Health changed by " + val);
         HealthBar.fillAmount = val / StartHealth;
-        Debug.Log("HealthBar.fillAmount: " + HealthBar.fillAmount);
+      //  Debug.Log("HealthBar.fillAmount: " + HealthBar.fillAmount);
         if (val <= 0)
         {
-           Restore();
+            Die();
         }
     }
 
     void OnEnable()
     {
-        CurrentPoint = FindNearest(_points);
-        _waypoints.Remove(CurrentPoint);
+        CurrentPoint = Path.First();
+        _waveIndex = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-
         if (CurrentPoint != null)
         {
             var curPos = _transform.position;
             _transform.position = Vector3.MoveTowards(curPos, CurrentPoint.transform.position, Time.deltaTime * Speed);
+            var dist = Vector3.Distance(curPos, CurrentPoint.transform.position);
+            if (dist < 1)
+                SelectNewWayPoint();
         }
-    }
-
-    private GameObject FindNearest(List<GameObject> list)
-    {
-        var nearest = list.First();
-        foreach (var o in list.Where(c => c.transform.position.magnitude != nearest.transform.position.magnitude))
-        {
-            var dist1 = Vector3.Distance(nearest.transform.position, _transform.position);
-            var dist2 = Vector3.Distance(o.transform.position, _transform.position);
-            if (dist2 < dist1)
-            {
-                nearest = o;
-            }
-            else if (Math.Abs(dist2 - dist1) < 1)
-            {
-                Debug.Log("Found two equal distances");
-                if (nearest.transform.position.z == o.transform.position.z)
-                {
-                    Debug.Log("Randomize time!");
-                    var rand = new System.Random();
-                    var res = rand.Next(100);
-                    if (res % 2 == 0)
-                        nearest = o;
-                }
-                else if (nearest.transform.position.z > o.transform.position.z)
-                {
-                    nearest = o;
-                }
-            }
-        }
-        //Debug.Log("Nearest point: " + nearest.transform.position);
-        return nearest;
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -116,24 +83,26 @@ public class Enemy : MonoBehaviour
         //Debug.Log("Triggered with " + collider.tag);
         switch (collider.tag)
         {
-            case "Waypoint":
-                var list = _waypoints.Where(c => c.transform.position.magnitude !=
-                                                CurrentPoint.transform.position.magnitude)
-                    .ToList();
-                CurrentPoint = FindNearest(list);
-                _waypoints.Remove(CurrentPoint);
-                break;
+            //case "Waypoint":
+            //    SelectNewWayPoint();
+            //    break;
             case "Endpoint":
                 GameManager.Instance.LifeCount--;
-                Restore();
+                Die();
                 break;
         }
     }
 
-    private void Restore()
+    private void SelectNewWayPoint()
+    {        
+        CurrentPoint = Path[_waveIndex];
+        _waveIndex++;
+    }
+
+    private void Die()
     {
-        Health = StartHealth;
-        CurrentPoint = null;
-        gameObject.SetActive(false);
+        GameManager.Instance.Money += Reward;
+        GameManager.Instance.EnemyCount--;
+        Destroy(gameObject);
     }
 }
